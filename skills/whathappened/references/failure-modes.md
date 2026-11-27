@@ -10,10 +10,13 @@ Recognize these early. Prefer shrinking claims over stretching a bad sample.
 
 ## 2. Missing X tools
 
-**Symptoms:** Only web/search tools available.
+**Symptoms:** Only web/search tools available (for example, running in Jcode on
+a non-`grok-build` provider such as Claude, OpenAI, Gemini, or a plain `xai` API
+key, or in another host without Grok's native X tools).
 
-**Do:** Refuse the skill path. Explain Grok Build X tools are required. Do not
-produce a fake X opinion map from Google.
+**Do:** Refuse the skill path. Explain that Grok's native X tools are required
+(run in Grok Build, or in Jcode with `--provider grok-build` when those X tools
+are available). Do not produce a fake X opinion map from web search.
 
 ## 3. Entity collision
 

@@ -3,8 +3,13 @@
 <p align="center">
   <a href="https://docs.x.ai/build/overview"
     ><img
-      alt="Grok Build only"
-      src="https://img.shields.io/badge/Grok%20Build-only-black?style=flat-square"
+      alt="Requires Grok Build"
+      src="https://img.shields.io/badge/Grok%20Build-required-black?style=flat-square"
+  /></a>
+  <a href="https://github.com/1jehuang/jcode"
+    ><img
+      alt="Jcode grok-build"
+      src="https://img.shields.io/badge/Jcode-grok--build-black?style=flat-square"
   /></a>
   <a href="https://agentskills.io"
     ><img
@@ -30,13 +35,13 @@
 
 <h3 align="center">What just happened on X - and what is the room actually saying?</h3>
 
-<p align="center"><strong>Grok Build only.</strong> This skill needs Grok’s native X tools. Other agents can install the package; they cannot run it for real.</p>
+<p align="center"><strong>Requires Grok Build’s native X tools.</strong> Runs in <a href="https://docs.x.ai/build/overview">Grok Build</a> directly, or in <a href="https://github.com/1jehuang/jcode">Jcode</a> with <code>--provider grok-build</code>. Other agents and non-Grok providers can install the package, but cannot run the X queries.</p>
 
 Something drops. A model ships. A founder posts. A product melts down.
 
 You open X and get dunks, screenshots, quote-tweet chains, and three conflicting "official" takes - none of them in one place.
 
-**whathappened** is a [Grok Build](https://docs.x.ai/build/overview) [Agent Skill](https://agentskills.io) that turns that firehose into a short neutral briefing: what happened, where the conversation is, the opinion map, the live debates, and the receipts.
+**whathappened** is an [Agent Skill](https://agentskills.io) for [Grok Build](https://docs.x.ai/build/overview) and [Jcode](https://github.com/1jehuang/jcode) (`--provider grok-build`) that turns that firehose into a short neutral briefing: what happened, where the conversation is, the opinion map, the live debates, and the receipts.
 
 - **X-first** - public conversation from X, not a blog roundup. One optional web lookup only to resolve *who/what* the topic is.
 - **Adaptive window** - breaking stories use minutes or hours; quieter ones widen only when the story is incomplete. Freshness wins by default.
@@ -45,11 +50,17 @@ You open X and get dunks, screenshots, quote-tweet chains, and three conflicting
 ## Quick Start
 
 ```sh
-# install into Grok Build (global recommended)
+# install globally
 $ npx skills add kunchenguid/whathappened -g
-# or: copy skills/whathappened → ~/.grok/skills/whathappened
+# or copy skills/whathappened → ~/.grok/skills/whathappened (Grok Build)
+# or copy skills/whathappened → ~/.jcode/skills/whathappened (Jcode)
 
 # in Grok Build
+/whathappened Kimi K3
+
+# in Jcode (requires Grok Build login + --provider grok-build)
+$ jcode login --provider grok-build
+$ jcode --provider grok-build
 /whathappened Kimi K3
 ```
 
@@ -120,20 +131,25 @@ Shares are rough qualitative judgment from this X sample, not polling.
 - What would change the read: multi-day coding failures, weights delayed, or closed labs shipping clear counters.
 ```
 
-## Grok Build only
+## Runtime requirement (Grok Build or Jcode `--provider grok-build`)
 
-This skill is **not** a multi-harness research product. It depends on Grok Build’s native X stack:
+This skill is **not** a general-purpose web research product. It depends on Grok Build’s native X stack:
 
 - `x_keyword_search`
 - `x_semantic_search`
 - `x_thread_fetch`
 - `x_user_search`
 
-If those tools are missing, the skill should **refuse** rather than fake an X briefing from web search. Installing into Claude Code, Cursor, Codex, etc. will not give you a working run.
+Supported hosts:
+
+- **Grok Build** directly.
+- **Jcode** with `--provider grok-build` (Grok Build subscription via the authenticated Grok CLI ACP transport).
+
+If those native X tools are missing in the active session, the skill **refuses** rather than faking an X briefing from web search. Installing into Claude Code, Cursor, Codex, or running Jcode on non-Grok providers (Claude, OpenAI, Gemini, or a plain `--provider xai` API key) will not give you a working run.
 
 ## Install
 
-**Global (recommended)** for Grok:
+**Global (recommended)** via `npx skills`:
 
 ```sh
 npx skills add kunchenguid/whathappened -g
@@ -145,15 +161,37 @@ npx skills add kunchenguid/whathappened -g
 npx skills add kunchenguid/whathappened
 ```
 
-**Direct into Grok’s user skills dir:**
+**Direct into Grok Build’s user skills dir:**
 
 ```sh
 git clone https://github.com/kunchenguid/whathappened.git
+mkdir -p ~/.grok/skills
 cp -R whathappened/skills/whathappened ~/.grok/skills/whathappened
 # or: ln -s "$(pwd)/whathappened/skills/whathappened" ~/.grok/skills/whathappened
 ```
 
-Grok also discovers skills under `.agents/skills/`, so a normal `npx skills add -g` install often lands where Grok can see it. Prefer `~/.grok/skills/` when you want the Grok-native path explicitly.
+**Direct into Jcode’s user skills dir:**
+
+```sh
+git clone https://github.com/kunchenguid/whathappened.git
+mkdir -p ~/.jcode/skills
+cp -R whathappened/skills/whathappened ~/.jcode/skills/whathappened
+# or: ln -s "$(pwd)/whathappened/skills/whathappened" ~/.jcode/skills/whathappened
+```
+
+Both Grok Build and Jcode also discover skills under `.agents/skills/` (global `~/.agents/skills/` and project-local `.agents/skills/`), and Jcode also loads project-local `.jcode/skills/`. Prefer `~/.grok/skills/` or `~/.jcode/skills/` when you want the host-native path explicitly.
+
+**Running in Jcode:**
+
+```sh
+# authenticate Grok Build in Jcode (uses the authenticated Grok CLI ACP transport)
+jcode login --provider grok-build
+
+# launch Jcode on the grok-build provider
+jcode --provider grok-build
+```
+
+Then run `/whathappened <topic>` inside Jcode (or switch to `grok-build` in an existing interactive session with `/model`). Running `/whathappened` in Jcode on any non-`grok-build` provider will stop at the host check because Grok’s native X tools are not available.
 
 **List skills in this package without installing:**
 
@@ -213,7 +251,7 @@ skills/whathappened/
     failure-modes.md       # thin sample, bots, entity collisions, …
 ```
 
-Ships as an [`npx skills`](https://github.com/vercel-labs/skills) package (`skills/<name>/SKILL.md`) for install convenience. Runtime target remains Grok Build only.
+Ships as an [`npx skills`](https://github.com/vercel-labs/skills) package (`skills/<name>/SKILL.md`) for install convenience. Runtime still requires Grok Build’s native X tools (Grok Build directly, or Jcode with `--provider grok-build`).
 
 ## Development
 
@@ -224,7 +262,7 @@ $EDITOR skills/whathappened/SKILL.md
 # smoke-test discovery locally
 npx skills add ./ -l
 
-# install from this checkout for Grok
+# install from this checkout for Grok Build or Jcode
 npx skills add ./ -g -y
-# or symlink into ~/.grok/skills/whathappened
+# or symlink into ~/.grok/skills/whathappened or ~/.jcode/skills/whathappened
 ```

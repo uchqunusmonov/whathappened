@@ -6,8 +6,8 @@ description: >
   exception: at most one web lookup for entity resolution. Use when the user
   runs /whathappened, or asks what happened / what's going on / X or Twitter
   reaction / public opinion on X about a person, product, launch, or event.
-  Grok Build only (requires native X tools). Neutral analyst tone. No discovery
-  mode in v1.
+  Requires Grok's native X tools (Grok Build, or Jcode with --provider
+  grok-build). Neutral analyst tone. No discovery mode in v1.
 metadata:
   short-description: "X-only adaptive briefing of events + public opinion"
 ---
@@ -28,17 +28,19 @@ You need these tools:
 - `x_thread_fetch`
 - `x_user_search`
 
-If they are missing, **stop**. Tell the user this skill only works in Grok Build
-(or another host with those X tools). Do not fake an X briefing from web search.
+If they are missing, **stop**. Tell the user this skill requires Grok's native X
+tools (Grok Build, or Jcode with `--provider grok-build` when those X tools are
+available). Do not fake an X briefing from web search.
 
 ## Hard rules
 
 1. **X-first synthesis.** All claims about the event and public opinion come
    from X tool results. Never invent posts, handles, engagement, or quotes.
-2. **Soft web exception.** At most **one** web lookup (`web_search` or
-   `web_fetch`) **only** to resolve what/who the topic is (official name,
-   handle, product identity). Do not use web for opinions, sentiment, or
-   "what people think." If you use the web lookup, say so in Gaps.
+2. **Soft web exception.** At most **one** web lookup (e.g. `web_search` /
+   `web_fetch`, or Jcode's `websearch` / `webfetch`) **only** to resolve
+   what/who the topic is (official name, handle, product identity). Do not use
+   web for opinions, sentiment, or "what people think." If you use the web
+   lookup, say so in Gaps.
 3. **No discovery.** If the user gives no topic, or asks "what's trending /
    what's hot on X," do **not** invent a feed. Ask for a topic in one short
    question.
@@ -51,11 +53,14 @@ If they are missing, **stop**. Tell the user this skill only works in Grok Build
 7. **Opinion is not ground truth.** Frame sentiment as public conversation on
    this X sample.
 8. **Citations.** Prefer `@handle` plus post links when available. Use the
-   host's inline post citation render when you have post citation IDs from X
-   tools. Never invent URLs. Never append a trailing dump of unrelated Sources.
+   host's inline post citation format if supported and post citation IDs are
+   returned by X tools; otherwise use standard markdown links for real URLs.
+   Never invent URLs. Never append a trailing dump of unrelated Sources.
 
-Read `references/query-patterns.md` when building search queries.
-Read `references/failure-modes.md` when the sample looks thin, mixed, or noisy.
+Read `references/query-patterns.md` (alongside this `SKILL.md`) when building
+search queries.
+Read `references/failure-modes.md` (alongside this `SKILL.md`) when the sample
+looks thin, mixed, or noisy.
 
 ## Pipeline
 
